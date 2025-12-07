@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MEEPOBOT Web Remote</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="{{ url_for('static', filename='tailwind.js') }}"></script>
+    <link
+      href="{{ url_for('static', filename='materialdesignicons.css') }}"
+      rel="stylesheet" />
+    <style>
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+          "Noto Color Emoji";
+      }
+      .bg-app {
+        background-color: #1e293b;
+      }
+      .panel-bg {
+        background-color: #334155;
+      }
+      .panel-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
+          0 2px 4px -2px rgba(0, 0, 0, 0.2);
+      }
+      .mode-status {
+        transition: color 0.3s;
+      }
+      .dpad-button {
+        width: 80px;
+        height: 80px;
+      }
+      #blocklyDiv {
+        min-height: 250px;
+      }
+      .mdi {
+        font-size: 24px;
+      }
+      .nav-tab {
+        --tw-bg-opacity: 1;
+        background-color: rgb(71 85 105 / var(--tw-bg-opacity));
+        --tw-text-opacity: 1;
+        color: rgb(203 213 225 / var(--tw-text-opacity));
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+        border-radius: 0.375rem 0.375rem 0 0;
+        transition-property: color, background-color, border-color,
+          text-decoration-color, fill, stroke, opacity, box-shadow, transform,
+          filter, -webkit-backdrop-filter;
+        transition-property: color, background-color, border-color,
+          text-decoration-color, fill, stroke, opacity, box-shadow, transform,
+          filter, backdrop-filter;
+        transition-property: color, background-color, border-color,
+          text-decoration-color, fill, stroke, opacity, box-shadow, transform,
+          filter, backdrop-filter, -webkit-backdrop-filter;
+        transition-duration: 200ms;
+      }
+      .nav-tab:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(71 85 105 / var(--tw-bg-opacity));
+        --tw-text-opacity: 1;
+        color: rgb(255 255 255 / var(--tw-text-opacity));
+      }
+      .active-tab {
+        --tw-bg-opacity: 1;
+        background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+        --tw-text-opacity: 1;
+        color: rgb(255 255 255 / var(--tw-text-opacity));
+      }
+      .btn-primary {
+        --tw-bg-opacity: 1;
+        background-color: rgb(34 197 94 / var(--tw-bg-opacity));
+        --tw-text-opacity: 1;
+        color: rgb(255 255 255 / var(--tw-text-opacity));
+        font-weight: 700;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+      .btn-primary:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(21 128 61 / var(--tw-bg-opacity));
+      }
+      .btn-servo {
+        --tw-bg-opacity: 1;
+        background-color: rgb(100 116 139 / var(--tw-bg-opacity));
+        --tw-text-opacity: 1;
+        color: rgb(17 24 39 / var(--tw-text-opacity));
+        font-weight: 600;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        border-radius: 0.375rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+      .btn-servo:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(71 85 105 / var(--tw-bg-opacity));
+      }
+      .color-btn {
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+      }
+      .color-btn:hover {
+        border-color: rgb(255, 255, 255);
+        transform: scale(1.05);
+      }
+      .btn-action {
+        font-weight: 700;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-app text-gray-100 flex flex-col items-center min-h-screen pb-10">
+    <header class="w-full text-center py-6 bg-slate-800 shadow-xl">
+      <h1 class="text-4xl font-extrabold text-blue-400 tracking-wider">
+        MEEPOBOT Web Control <span class="mdi mdi-robot"></span>
+      </h1>
+      <div
+        class="mt-4 text-xl font-semibold bg-slate-700 rounded-lg px-5 py-2 inline-block">
+        Current Mode:
+        <span id="robot-mode" class="mode-status font-bold text-red-500"
+          >STOP</span
+        >
+      </div>
+    </header>
+
+    <div
+      class="mt-8 mb-8 p-1 border-4 border-blue-500 rounded-xl shadow-2xl max-w-lg w-full bg-black">
+      <img
+        id="video-feed"
+        src="{{ url_for('video_feed') }}"
+        width="320"
+        height="240"
+        alt="Robot Camera Feed"
+        class="w-full h-auto rounded-lg" />
+    </div>
+
+    <nav class="w-full max-w-6xl mb-6 px-4">
+      <div
+        id="nav-tabs"
+        class="flex flex-wrap justify-center gap-4 border-b-2 border-slate-600 pb-2">
+        <button
+          onclick="showSection('manual-drive')"
+          class="nav-tab active-tab">
+          Manual Drive Remote <span class="mdi mdi-gamepad"></span>
+        </button>
+        <button onclick="showSection('sequential-prog')" class="nav-tab">
+          Sequential Programming <span class="mdi mdi-puzzle"></span>
+        </button>
+        <button onclick="showSection('face-track')" class="nav-tab">
+          Face Tracking <span class="mdi mdi-face-recognition"></span>
+        </button>
+        <button onclick="showSection('line-follow')" class="nav-tab">
+          Line Following <span class="mdi mdi-ray-end-arrow"></span>
+        </button>
+      </div>
+    </nav>
+
+    <main class="container w-full max-w-6xl px-4 flex flex-col gap-6">
+      <section
+        id="manual-drive"
+        class="control-panel panel-bg panel-shadow rounded-xl p-6 transition-all duration-300">
+        <h2
+          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
+          1. Manual Drive Remote
+          <span class="mdi mdi-controller-classic"></span>
+        </h2>
+
+        <div
+          class="manual-controls grid grid-cols-3 gap-3 justify-items-center align-items-center mb-8">
+          <button
+            onmousedown="sendManualCommand('forward')"
+            ontouchstart="sendManualCommand('forward', event)"
+            onmouseup="sendManualCommand('stop')"
+            ontouchend="sendManualCommand('stop', event)"
+            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-2 row-start-1">
+            <span class="mdi mdi-arrow-up-bold"></span>
+          </button>
+          <button
+            onmousedown="sendManualCommand('left')"
+            ontouchstart="sendManualCommand('left', event)"
+            onmouseup="sendManualCommand('stop')"
+            ontouchend="sendManualCommand('stop', event)"
+            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-1 row-start-2">
+            <span class="mdi mdi-arrow-left-bold"></span>
+          </button>
+          <button
+            onmousedown="sendManualCommand('stop')"
+            ontouchstart="sendManualCommand('stop', event)"
+            class="dpad-button bg-red-600 hover:bg-red-700 active:bg-red-800 text-lg rounded-full shadow-lg col-start-2 row-start-2 text-white font-bold">
+            STOP
+          </button>
+          <button
+            onmousedown="sendManualCommand('right')"
+            ontouchstart="sendManualCommand('right', event)"
+            onmouseup="sendManualCommand('stop')"
+            ontouchend="sendManualCommand('stop', event)"
+            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-3 row-start-2">
+            <span class="mdi mdi-arrow-right-bold"></span>
+          </button>
+          <button
+            onmousedown="sendManualCommand('backward')"
+            ontouchstart="sendManualCommand('backward', event)"
+            onmouseup="sendManualCommand('stop')"
+            ontouchend="sendManualCommand('stop', event)"
+            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-2 row-start-3">
+            <span class="mdi mdi-arrow-down-bold"></span>
+          </button>
+        </div>
+
+        <div
+          class="flex flex-wrap justify-around gap-4 pt-4 border-t border-slate-600">
+          <div class="text-center flex flex-col items-center">
+            <span class="mb-2 font-medium">Pan (Base)</span>
+            <div class="flex space-x-2">
+              <button
+                onclick="sendServoCommand('pan', 'increment')"
+                class="btn-servo">
+                Left <span class="mdi mdi-arrow-left"></span>
+              </button>
+              <button
+                onclick="sendServoCommand('pan', 'decrement')"
+                class="btn-servo">
+                Right <span class="mdi mdi-arrow-right"></span>
+              </button>
+            </div>
+          </div>
+          <div class="text-center flex flex-col items-center">
+            <span class="mb-2 font-medium">Tilt (Head)</span>
+            <div class="flex space-x-2">
+              <button
+                onclick="sendServoCommand('tilt', 'decrement')"
+                class="btn-servo">
+                Up <span class="mdi mdi-arrow-up"></span>
+              </button>
+              <button
+                onclick="sendServoCommand('tilt', 'increment')"
+                class="btn-servo">
+                Down <span class="mdi mdi-arrow-down"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="sequential-prog"
+        class="control-panel panel-bg panel-shadow rounded-xl p-6 hidden">
+        <h2
+          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
+          2. Sequential Programming (Blockly)
+          <span class="mdi mdi-puzzle"></span>
+        </h2>
+
+        <div
+          id="blocklyDiv"
+          class="w-full border-2 border-blue-600 rounded-md mb-4 bg-white"
+          style="height: 300px"></div>
+
+        <div
+          class="flex flex-col sm:flex-row justify-between items-center mt-4">
+          <button
+            onclick="runBlocklyInstructions()"
+            class="btn-primary run-blockly-btn w-full sm:w-auto mb-3 sm:mb-0">
+            Run Block Sequence <span class="mdi mdi-rocket"></span>
+          </button>
+          <p id="seq-status" class="text-yellow-400 font-medium"></p>
+        </div>
+        <textarea
+          id="generated_instructions"
+          rows="2"
+          cols="50"
+          class="hidden"></textarea>
+      </section>
+
+      <section
+        id="face-track"
+        class="control-panel panel-bg panel-shadow rounded-xl p-6 hidden">
+        <h2
+          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
+          3. Autonomous Mode: Face Tracking
+          <span class="mdi mdi-face-recognition"></span>
+        </h2>
+        <p class="mb-6 text-slate-300">
+          In this mode, the robot will use its camera and vision system to
+          detect and track the nearest face, adjusting its pan/tilt and movement
+          to keep it centered.
+        </p>
+        <button
+          class="btn-action bg-blue-600 hover:bg-blue-700 w-full"
+          onclick="setMode('FACE_TRACK')">
+          Start Face Tracking <span class="mdi mdi-eye"></span>
+        </button>
+      </section>
+
+      <section
+        id="line-follow"
+        class="control-panel panel-bg panel-shadow rounded-xl p-6 hidden">
+        <h2
+          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
+          4. Autonomous Mode: Line Following
+          <span class="mdi mdi-ray-end-arrow"></span>
+        </h2>
+        <p class="mb-4 text-slate-300">
+          In this mode, the robot analyzes the camera feed to follow a colored
+          line, autonomously navigating a track.
+        </p>
+
+        <div class="mb-6 p-4 bg-slate-700 rounded-lg">
+          <label class="block text-sm font-medium mb-3 text-slate-200">
+            Select Line Color:
+          </label>
+          <div class="grid grid-cols-4 gap-2">
+            <button
+              onclick="setLineColor('black')"
+              class="color-btn bg-gray-900 text-white">
+              Black
+            </button>
+            <button
+              onclick="setLineColor('white')"
+              class="color-btn bg-gray-100 text-gray-900">
+              White
+            </button>
+            <button
+              onclick="setLineColor('red')"
+              class="color-btn bg-red-600 text-white">
+              Red
+            </button>
+            <button
+              onclick="setLineColor('blue')"
+              class="color-btn bg-blue-600 text-white">
+              Blue
+            </button>
+            <button
+              onclick="setLineColor('green')"
+              class="color-btn bg-green-600 text-white">
+              Green
+            </button>
+            <button
+              onclick="setLineColor('yellow')"
+              class="color-btn bg-yellow-400 text-gray-900">
+              Yellow
+            </button>
+            <button
+              onclick="setLineColor('orange')"
+              class="color-btn bg-orange-500 text-white">
+              Orange
+            </button>
+          </div>
+          <div id="color-status" class="mt-3 text-sm text-green-400"></div>
+        </div>
+
+        <button
+          class="btn-action bg-yellow-600 hover:bg-yellow-700 text-gray-900 w-full"
+          onclick="setMode('LINE_FOLLOW')">
+          Start Line Follow <span class="mdi mdi-ruler"></span>
+        </button>
+      </section>
+    </main>
+
+    <button
+      onclick="setMode('STOP')"
+      class="stop-all-btn bg-red-600 hover:bg-red-700 text-white mt-10 text-2xl font-bold py-4 px-8 rounded-xl shadow-2xl transition duration-200">
+      <span class="mdi mdi-stop-circle"></span> STOP ALL MOTION
+    </button>
+
+    <script src="{{ url_for('static', filename='blockly/blockly_compressed.js') }}"></script>
+    <script src="{{ url_for('static', filename='blockly/blocks_compressed.js') }}"></script>
+    <script src="{{ url_for('static', filename='blockly/javascript_compressed.js') }}"></script>
+    <script src="{{ url_for('static', filename='blockly/msg/js/en.js') }}"></script>
+    <script>
+      // For Blockly v12+, we need to use forBlock to register generators
+      // Get reference to the JavaScript generator
+      const javascriptGenerator = Blockly.JavaScript;
+
+      // Define custom robot blocks
+      Blockly.Blocks["robot_forward"] = {
+        init: function () {
+          this.appendDummyInput().appendField("Move Forward for");
+          this.appendValueInput("DURATION").setCheck("Number");
+          this.appendDummyInput().appendField("seconds");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(120);
+          this.setTooltip("Move robot forward");
+          this.setHelpUrl("");
+        },
+      };
+
+      Blockly.Blocks["robot_backward"] = {
+        init: function () {
+          this.appendDummyInput().appendField("Move Backward for");
+          this.appendValueInput("DURATION").setCheck("Number");
+          this.appendDummyInput().appendField("seconds");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(120);
+          this.setTooltip("Move robot backward");
+          this.setHelpUrl("");
+        },
+      };
+
+      Blockly.Blocks["robot_left"] = {
+        init: function () {
+          this.appendDummyInput().appendField("Turn Left for");
+          this.appendValueInput("DURATION").setCheck("Number");
+          this.appendDummyInput().appendField("seconds");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(60);
+          this.setTooltip("Turn robot left");
+          this.setHelpUrl("");
+        },
+      };
+
+      Blockly.Blocks["robot_right"] = {
+        init: function () {
+          this.appendDummyInput().appendField("Turn Right for");
+          this.appendValueInput("DURATION").setCheck("Number");
+          this.appendDummyInput().appendField("seconds");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(60);
+          this.setTooltip("Turn robot right");
+          this.setHelpUrl("");
+        },
+      };
+
+      Blockly.Blocks["robot_stop"] = {
+        init: function () {
+          this.appendDummyInput().appendField("Stop for");
+          this.appendValueInput("DURATION").setCheck("Number");
+          this.appendDummyInput().appendField("seconds");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(0);
+          this.setTooltip("Stop robot movement");
+          this.setHelpUrl("");
+        },
+      };
+
+      // Register code generators using forBlock (Blockly v12+ API)
+      javascriptGenerator.forBlock["robot_forward"] = function (
+        block,
+        generator
+      ) {
+        const duration =
+          generator.valueToCode(
+            block,
+            "DURATION",
+            javascriptGenerator.ORDER_ATOMIC
+          ) || "1";
+        return "t_up:" + duration + ";\n";
+      };
+
+      javascriptGenerator.forBlock["robot_backward"] = function (
+        block,
+        generator
+      ) {
+        const duration =
+          generator.valueToCode(
+            block,
+            "DURATION",
+            javascriptGenerator.ORDER_ATOMIC
+          ) || "1";
+        return "t_down:" + duration + ";\n";
+      };
+
+      javascriptGenerator.forBlock["robot_left"] = function (block, generator) {
+        const duration =
+          generator.valueToCode(
+            block,
+            "DURATION",
+            javascriptGenerator.ORDER_ATOMIC
+          ) || "1";
+        return "turnLeft:" + duration + ";\n";
+      };
+
+      javascriptGenerator.forBlock["robot_right"] = function (
+        block,
+        generator
+      ) {
+        const duration =
+          generator.valueToCode(
+            block,
+            "DURATION",
+            javascriptGenerator.ORDER_ATOMIC
+          ) || "1";
+        return "turnRight:" + duration + ";\n";
+      };
+
+      javascriptGenerator.forBlock["robot_stop"] = function (block, generator) {
+        const duration =
+          generator.valueToCode(
+            block,
+            "DURATION",
+            javascriptGenerator.ORDER_ATOMIC
+          ) || "0";
+        return "t_stop:" + duration + ";\n";
+      };
+
+      const toolboxXml = `
+        <xml id="toolbox" style="display: none">
+          <category name="Robot Movement" colour="120">
+            <block type="robot_forward">
+              <value name="DURATION">
+                <shadow type="math_number">
+                  <field name="NUM">2</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="robot_backward">
+              <value name="DURATION">
+                <shadow type="math_number">
+                  <field name="NUM">2</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="robot_left">
+              <value name="DURATION">
+                <shadow type="math_number">
+                  <field name="NUM">1</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="robot_right">
+              <value name="DURATION">
+                <shadow type="math_number">
+                  <field name="NUM">1</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="robot_stop">
+              <value name="DURATION">
+                <shadow type="math_number">
+                  <field name="NUM">1</field>
+                </shadow>
+              </value>
+            </block>
+          </category>
+          <category name="Loops" colour="120">
+            <block type="controls_repeat_ext">
+              <value name="TIMES">
+                <shadow type="math_number">
+                  <field name="NUM">3</field>
+                </shadow>
+              </value>
+            </block>
+          </category>
+          <category name="Math" colour="230">
+            <block type="math_number">
+              <field name="NUM">1</field>
+            </block>
+            <block type="math_arithmetic">
+              <field name="OP">ADD</field>
+              <value name="A">
+                <shadow type="math_number">
+                  <field name="NUM">1</field>
+                </shadow>
+              </value>
+              <value name="B">
+                <shadow type="math_number">
+                  <field name="NUM">1</field>
+                </shadow>
+              </value>
+            </block>
+          </category>
+        </xml>
+      `;
+
+      let workspace = null;
+
+      function showSection(sectionId) {
+        document.querySelectorAll("main section").forEach((section) => {
+          section.classList.add("hidden");
+        });
+        document.getElementById(sectionId).classList.remove("hidden");
+
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.classList.remove("active-tab");
+          if (tab.innerText.toLowerCase().includes(sectionId.split("-")[0])) {
+            tab.classList.add("active-tab");
+          }
+        });
+
+        if (sectionId === "sequential-prog") {
+          if (!workspace) {
+            initBlockly();
+          }
+        }
+      }
+
+      function updateMode(mode) {
+        const modeEl = document.getElementById("robot-mode");
+        modeEl.innerText = mode;
+        modeEl.classList.remove(
+          "text-red-500",
+          "text-blue-500",
+          "text-orange-500",
+          "text-green-500"
+        );
+
+        switch (mode) {
+          case "STOP":
+            modeEl.classList.add("text-red-500");
+            break;
+          case "FACE_TRACK":
+            modeEl.classList.add("text-blue-500");
+            break;
+          case "LINE_FOLLOW":
+            modeEl.classList.add("text-orange-500");
+            break;
+          case "MANUAL":
+          case "SEQUENTIAL":
+          default:
+            modeEl.classList.add("text-green-500");
+        }
+      }
+
+      function sendManualCommand(command, event) {
+        if (event) {
+          event.preventDefault();
+        }
+        fetch("/manual_control", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: command, speed: 50 }),
+        })
+          .then((response) => response.json())
+          .then((data) => updateMode(data.mode))
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function sendServoCommand(servo, action) {
+        fetch("/servo_control", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ servo: servo, action: action }),
+        })
+          .then((response) => response.json())
+          .then((data) => console.log("Servo:", data))
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function initBlockly() {
+        const blocklyDiv = document.getElementById("blocklyDiv");
+
+        const toolbox = toolboxXml;
+
+        workspace = Blockly.inject(blocklyDiv, {
+          toolbox: toolbox,
+          scrollbars: true,
+          trashcan: true,
+          horizontalLayout: false,
+          renderer: "thrasos",
+          grid: { spacing: 20, length: 3, colour: "#64748b", snap: true },
+          zoom: {
+            controls: true,
+            wheel: true,
+            startScale: 1.0,
+            maxScale: 3,
+            minScale: 0.3,
+          },
+        });
+
+        const xmlText =
+          '<xml><block type="robot_forward" x="70" y="50"><value name="DURATION"><shadow type="math_number"><field name="NUM">2</field></shadow></value></block></xml>';
+
+        const xmlDom = Blockly.utils.xml.textToDom(xmlText);
+        Blockly.Xml.domToWorkspace(xmlDom, workspace);
+      }
+
+      function runBlocklyInstructions() {
+        if (!workspace) {
+          console.error("Workspace not initialized");
+          return;
+        }
+
+        let code = javascriptGenerator.workspaceToCode(workspace);
+
+        const instruction_list = code
+          .split(";")
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0)
+          .join(",");
+
+        document.getElementById("generated_instructions").value =
+          instruction_list;
+
+        const statusEl = document.getElementById("seq-status");
+
+        if (!instruction_list) {
+          statusEl.innerText = "Please add movement blocks to the workspace.";
+          return;
+        }
+
+        statusEl.innerText = "Sending instructions...";
+
+        fetch("/run_instructions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ instructions: instruction_list }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "running") {
+              updateMode(data.mode);
+              statusEl.innerText = `Running sequence with ${data.count} steps...`;
+            } else {
+              statusEl.innerText = data.message;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            statusEl.innerText = "Failed to send instructions.";
+          });
+      }
+
+      function setMode(mode) {
+        fetch("/set_mode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: mode }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            updateMode(data.mode);
+            if (mode === "FACE_TRACK") showSection("face-track");
+            if (mode === "LINE_FOLLOW") showSection("line-follow");
+            if (mode === "STOP") showSection("manual-drive");
+            if (mode === "SEQUENTIAL") showSection("sequential-prog");
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function setLineColor(color) {
+        fetch("/set_line_color", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ color: color }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const statusEl = document.getElementById("color-status");
+            if (data.status === "color_set") {
+              statusEl.innerText = `✓ Line color set to: ${color.toUpperCase()}`;
+              statusEl.className = "mt-3 text-sm text-green-400";
+            } else {
+              statusEl.innerText = `✗ Failed to set color: ${data.message}`;
+              statusEl.className = "mt-3 text-sm text-red-400";
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            const statusEl = document.getElementById("color-status");
+            statusEl.innerText = "✗ Connection error";
+            statusEl.className = "mt-3 text-sm text-red-400";
+          });
+      }
+
+      window.onload = function () {
+        if (typeof Blockly !== "undefined" && Blockly.inject) {
+        } else {
+          console.error(
+            "Blockly library not found. Ensure static/blockly/ files are loaded correctly."
+          );
+        }
+        updateMode("STOP");
+        showSection("manual-drive");
+      };
+    </script>
+  </body>
+</html>
