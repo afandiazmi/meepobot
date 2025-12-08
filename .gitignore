@@ -13,7 +13,7 @@ ENV/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
+
 
 # Development/Testing folders
 AI Code/
@@ -33,8 +33,6 @@ Thumbs.db
 # Logs
 *.log
 
-# Personal files
-commandhistory.txt
 
 # Temporary files
 *.tmp
