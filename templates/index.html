@@ -1,411 +1,434 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>MEEPOBOT Web Remote</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script src="{{ url_for('static', filename='tailwind.js') }}"></script>
     <link
       href="{{ url_for('static', filename='materialdesignicons.css') }}"
       rel="stylesheet" />
     <style>
+      /* Base Settings */
       body {
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-          "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-          "Noto Color Emoji";
+        font-family: "Inter", ui-sans-serif, system-ui, -apple-system,
+          sans-serif;
+        overflow: hidden; /* Prevent body scroll */
+        height: 100vh;
+        background-color: #f8fafc; /* Light Gray Background */
+        color: #1e293b; /* Dark text */
       }
-      .bg-app {
-        background-color: #1e293b;
+
+      /* Custom Scrollbar for internal panels */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
       }
-      .panel-bg {
-        background-color: #334155;
+      ::-webkit-scrollbar-track {
+        background: transparent;
       }
-      .panel-shadow {
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2),
-          0 2px 4px -2px rgba(0, 0, 0, 0.2);
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
       }
-      .mode-status {
-        transition: color 0.3s;
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
       }
+
+      /* D-Pad Styling */
       .dpad-button {
-        width: 80px;
-        height: 80px;
-      }
-      #blocklyDiv {
-        min-height: 250px;
-      }
-      .mdi {
+        width: 65px;
+        height: 65px;
         font-size: 24px;
+        border-radius: 1rem; /* Squircle */
+        transition: transform 0.1s, box-shadow 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dpad-button:active {
+        transform: scale(0.95);
+        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+      }
+
+      /* Tab Navigation (Segmented Control Style) */
+      .nav-container {
+        background-color: #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 0.25rem;
       }
       .nav-tab {
-        --tw-bg-opacity: 1;
-        background-color: rgb(71 85 105 / var(--tw-bg-opacity));
-        --tw-text-opacity: 1;
-        color: rgb(203 213 225 / var(--tw-text-opacity));
-        padding-left: 1rem;
-        padding-right: 1rem;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        font-weight: 500;
-        font-size: 1.125rem;
-        line-height: 1.75rem;
-        border-radius: 0.375rem 0.375rem 0 0;
-        transition-property: color, background-color, border-color,
-          text-decoration-color, fill, stroke, opacity, box-shadow, transform,
-          filter, -webkit-backdrop-filter;
-        transition-property: color, background-color, border-color,
-          text-decoration-color, fill, stroke, opacity, box-shadow, transform,
-          filter, backdrop-filter;
-        transition-property: color, background-color, border-color,
-          text-decoration-color, fill, stroke, opacity, box-shadow, transform,
-          filter, backdrop-filter, -webkit-backdrop-filter;
-        transition-duration: 200ms;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: #64748b;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
       }
       .nav-tab:hover {
-        --tw-bg-opacity: 1;
-        background-color: rgb(71 85 105 / var(--tw-bg-opacity));
-        --tw-text-opacity: 1;
-        color: rgb(255 255 255 / var(--tw-text-opacity));
+        color: #334155;
       }
       .active-tab {
-        --tw-bg-opacity: 1;
-        background-color: rgb(37 99 235 / var(--tw-bg-opacity));
-        --tw-text-opacity: 1;
-        color: rgb(255 255 255 / var(--tw-text-opacity));
-      }
-      .btn-primary {
-        --tw-bg-opacity: 1;
-        background-color: rgb(34 197 94 / var(--tw-bg-opacity));
-        --tw-text-opacity: 1;
-        color: rgb(255 255 255 / var(--tw-text-opacity));
-        font-weight: 700;
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -2px rgba(0, 0, 0, 0.1);
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
-      }
-      .btn-primary:hover {
-        --tw-bg-opacity: 1;
-        background-color: rgb(21 128 61 / var(--tw-bg-opacity));
-      }
-      .btn-servo {
-        --tw-bg-opacity: 1;
-        background-color: rgb(100 116 139 / var(--tw-bg-opacity));
-        --tw-text-opacity: 1;
-        color: rgb(17 24 39 / var(--tw-text-opacity));
-        font-weight: 600;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        border-radius: 0.375rem;
+        background-color: #ffffff;
+        color: #2563eb; /* Blue-600 */
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
           0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
       }
-      .btn-servo:hover {
-        --tw-bg-opacity: 1;
-        background-color: rgb(71 85 105 / var(--tw-bg-opacity));
+
+      /* Blockly Overrides for Light Mode */
+      #blocklyDiv {
+        height: 100%;
+        min-height: 300px;
+        width: 100%;
       }
-      .color-btn {
-        font-weight: 600;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.375rem;
-        transition: all 0.2s;
-        border: 2px solid transparent;
-      }
-      .color-btn:hover {
-        border-color: rgb(255, 255, 255);
-        transform: scale(1.05);
-      }
-      .btn-action {
-        font-weight: 700;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+      .blocklySvg {
+        background-color: #ffffff !important;
         border-radius: 0.5rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-          0 4px 6px -4px rgba(0, 0, 0, 0.1);
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
+      }
+      .blocklyToolboxDiv {
+        background-color: #f1f5f9 !important; /* Slate-100 */
+        border-right: 1px solid #e2e8f0;
+      }
+      .blocklyTreeLabel {
+        color: #334155 !important;
+      }
+      /* Hide Blockly scrollbars */
+      .blocklyScrollbarVertical,
+      .blocklyFlyoutScrollbar {
+        display: none !important;
+      }
+
+      /* Fullscreen logic */
+      .fullscreen-blockly {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9999;
+        background-color: #ffffff;
+        padding: 10px;
+      }
+
+      /* Utilities */
+      .glass-panel {
+        background: white;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Make video responsive within container without stretching */
+      .video-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #000;
+        border-radius: 0.5rem;
       }
     </style>
   </head>
-  <body
-    class="bg-app text-gray-100 flex flex-col items-center min-h-screen pb-10">
-    <header class="w-full text-center py-6 bg-slate-800 shadow-xl">
-      <h1 class="text-4xl font-extrabold text-blue-400 tracking-wider">
-        MEEPOBOT Web Control <span class="mdi mdi-robot"></span>
-      </h1>
+  <body class="flex flex-col h-screen">
+    <header
+      class="flex-none bg-white border-b border-gray-200 px-4 py-3 shadow-sm z-10 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <div class="bg-blue-600 text-white p-1 rounded-md">
+          <span class="mdi mdi-robot text-xl"></span>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800 tracking-tight">MEEPOBOT</h1>
+      </div>
+
       <div
-        class="mt-4 text-xl font-semibold bg-slate-700 rounded-lg px-5 py-2 inline-block">
-        Current Mode:
-        <span id="robot-mode" class="mode-status font-bold text-red-500"
+        class="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-1.5 border border-gray-200">
+        <span
+          class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+          >Status</span
+        >
+        <span
+          id="robot-mode"
+          class="text-sm font-bold text-red-500 transition-colors"
           >STOP</span
         >
       </div>
     </header>
 
     <div
-      class="mt-8 mb-8 p-1 border-4 border-blue-500 rounded-xl shadow-2xl max-w-lg w-full bg-black">
-      <img
-        id="video-feed"
-        src="{{ url_for('video_feed') }}"
-        width="320"
-        height="240"
-        alt="Robot Camera Feed"
-        class="w-full h-auto rounded-lg" />
-    </div>
+      class="flex-1 flex flex-col md:flex-row overflow-hidden p-2 md:p-4 gap-3">
+      <div class="flex-none md:flex-1 h-[35vh] md:h-auto flex flex-col gap-3">
+        <div
+          class="flex-1 glass-panel rounded-xl p-2 video-container relative overflow-hidden">
+          <img
+            id="video-feed"
+            src="{{ url_for('video_feed') }}"
+            alt="Robot Camera Feed" />
+          <div
+            class="absolute top-3 left-3 bg-black/50 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+            <span class="mdi mdi-camera"></span> LIVE
+          </div>
+        </div>
 
-    <nav class="w-full max-w-6xl mb-6 px-4">
-      <div
-        id="nav-tabs"
-        class="flex flex-wrap justify-center gap-4 border-b-2 border-slate-600 pb-2">
         <button
-          onclick="showSection('manual-drive')"
-          class="nav-tab active-tab">
-          Manual Drive Remote <span class="mdi mdi-gamepad"></span>
-        </button>
-        <button onclick="showSection('sequential-prog')" class="nav-tab">
-          Sequential Programming <span class="mdi mdi-puzzle"></span>
-        </button>
-        <button onclick="showSection('face-track')" class="nav-tab">
-          Face Tracking <span class="mdi mdi-face-recognition"></span>
-        </button>
-        <button onclick="showSection('line-follow')" class="nav-tab">
-          Line Following <span class="mdi mdi-ray-end-arrow"></span>
+          onclick="setMode('STOP')"
+          class="flex-none bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-red-500/30 transition-all flex items-center justify-center gap-2 text-lg">
+          <span class="mdi mdi-octagon-alert"></span> STOP ALL MOTORS
         </button>
       </div>
-    </nav>
 
-    <main class="container w-full max-w-6xl px-4 flex flex-col gap-6">
-      <section
-        id="manual-drive"
-        class="control-panel panel-bg panel-shadow rounded-xl p-6 transition-all duration-300">
-        <h2
-          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
-          1. Manual Drive Remote
-          <span class="mdi mdi-controller-classic"></span>
-        </h2>
+      <div
+        class="flex-1 md:w-2/3 flex flex-col glass-panel rounded-xl overflow-hidden">
+        <nav class="flex-none p-3 border-b border-gray-100">
+          <div
+            id="nav-tabs"
+            class="nav-container flex flex-wrap justify-between gap-1">
+            <button
+              onclick="showSection('manual-drive')"
+              class="nav-tab active-tab flex-1 py-2">
+              Manual
+            </button>
+            <button
+              onclick="showSection('sequential-prog')"
+              class="nav-tab flex-1 py-2">
+              Blockly
+            </button>
+            <button
+              onclick="showSection('face-track')"
+              class="nav-tab flex-1 py-2">
+              Face
+            </button>
+            <button
+              onclick="showSection('line-follow')"
+              class="nav-tab flex-1 py-2">
+              Line
+            </button>
+          </div>
+        </nav>
 
-        <div
-          class="manual-controls grid grid-cols-3 gap-3 justify-items-center align-items-center mb-8">
-          <button
-            onmousedown="sendManualCommand('forward')"
-            ontouchstart="sendManualCommand('forward', event)"
-            onmouseup="sendManualCommand('stop')"
-            ontouchend="sendManualCommand('stop', event)"
-            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-2 row-start-1">
-            <span class="mdi mdi-arrow-up-bold"></span>
-          </button>
-          <button
-            onmousedown="sendManualCommand('left')"
-            ontouchstart="sendManualCommand('left', event)"
-            onmouseup="sendManualCommand('stop')"
-            ontouchend="sendManualCommand('stop', event)"
-            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-1 row-start-2">
-            <span class="mdi mdi-arrow-left-bold"></span>
-          </button>
-          <button
-            onmousedown="sendManualCommand('stop')"
-            ontouchstart="sendManualCommand('stop', event)"
-            class="dpad-button bg-red-600 hover:bg-red-700 active:bg-red-800 text-lg rounded-full shadow-lg col-start-2 row-start-2 text-white font-bold">
-            STOP
-          </button>
-          <button
-            onmousedown="sendManualCommand('right')"
-            ontouchstart="sendManualCommand('right', event)"
-            onmouseup="sendManualCommand('stop')"
-            ontouchend="sendManualCommand('stop', event)"
-            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-3 row-start-2">
-            <span class="mdi mdi-arrow-right-bold"></span>
-          </button>
-          <button
-            onmousedown="sendManualCommand('backward')"
-            ontouchstart="sendManualCommand('backward', event)"
-            onmouseup="sendManualCommand('stop')"
-            ontouchend="sendManualCommand('stop', event)"
-            class="dpad-button bg-green-500 hover:bg-green-600 active:bg-green-700 text-3xl rounded-full shadow-lg col-start-2 row-start-3">
-            <span class="mdi mdi-arrow-down-bold"></span>
-          </button>
-        </div>
+        <main class="flex-1 relative overflow-y-auto bg-white">
+          <section
+            id="manual-drive"
+            class="h-full flex flex-col items-center justify-center p-4">
+            <div class="w-full max-w-sm">
+              <div class="grid grid-cols-3 gap-3 mb-6 justify-items-center">
+                <div class="col-start-2">
+                  <button
+                    onmousedown="sendManualCommand('forward')"
+                    ontouchstart="sendManualCommand('forward', event)"
+                    onmouseup="sendManualCommand('stop')"
+                    ontouchend="sendManualCommand('stop', event)"
+                    class="dpad-button bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-500 hover:text-white">
+                    <span class="mdi mdi-arrow-up-thick"></span>
+                  </button>
+                </div>
 
-        <div
-          class="flex flex-wrap justify-around gap-4 pt-4 border-t border-slate-600">
-          <div class="text-center flex flex-col items-center">
-            <span class="mb-2 font-medium">Pan (Base)</span>
-            <div class="flex space-x-2">
+                <div class="col-start-1">
+                  <button
+                    onmousedown="sendManualCommand('left')"
+                    ontouchstart="sendManualCommand('left', event)"
+                    onmouseup="sendManualCommand('stop')"
+                    ontouchend="sendManualCommand('stop', event)"
+                    class="dpad-button bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-500 hover:text-white">
+                    <span class="mdi mdi-arrow-left-thick"></span>
+                  </button>
+                </div>
+
+                <div class="col-start-2 flex items-center justify-center">
+                  <div
+                    class="w-16 h-16 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
+                    <span
+                      class="mdi mdi-gamepad-variant text-gray-400 text-2xl"></span>
+                  </div>
+                </div>
+
+                <div class="col-start-3">
+                  <button
+                    onmousedown="sendManualCommand('right')"
+                    ontouchstart="sendManualCommand('right', event)"
+                    onmouseup="sendManualCommand('stop')"
+                    ontouchend="sendManualCommand('stop', event)"
+                    class="dpad-button bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-500 hover:text-white">
+                    <span class="mdi mdi-arrow-right-thick"></span>
+                  </button>
+                </div>
+
+                <div class="col-start-2">
+                  <button
+                    onmousedown="sendManualCommand('backward')"
+                    ontouchstart="sendManualCommand('backward', event)"
+                    onmouseup="sendManualCommand('stop')"
+                    ontouchend="sendManualCommand('stop', event)"
+                    class="dpad-button bg-blue-100 text-blue-600 border border-blue-200 hover:bg-blue-500 hover:text-white">
+                    <span class="mdi mdi-arrow-down-thick"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="bg-gray-50 rounded-xl p-3 border border-gray-100 flex justify-around">
+                <div class="text-center">
+                  <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">
+                    Pan (Base)
+                  </p>
+                  <div class="flex gap-1">
+                    <button
+                      onclick="sendServoCommand('pan', 'increment')"
+                      class="bg-white hover:bg-gray-100 border px-3 py-1 rounded text-gray-600 shadow-sm">
+                      <span class="mdi mdi-chevron-left"></span>
+                    </button>
+                    <button
+                      onclick="sendServoCommand('pan', 'decrement')"
+                      class="bg-white hover:bg-gray-100 border px-3 py-1 rounded text-gray-600 shadow-sm">
+                      <span class="mdi mdi-chevron-right"></span>
+                    </button>
+                  </div>
+                </div>
+                <div class="w-px bg-gray-200"></div>
+                <div class="text-center">
+                  <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">
+                    Tilt (Head)
+                  </p>
+                  <div class="flex gap-1">
+                    <button
+                      onclick="sendServoCommand('tilt', 'decrement')"
+                      class="bg-white hover:bg-gray-100 border px-3 py-1 rounded text-gray-600 shadow-sm">
+                      <span class="mdi mdi-chevron-up"></span>
+                    </button>
+                    <button
+                      onclick="sendServoCommand('tilt', 'increment')"
+                      class="bg-white hover:bg-gray-100 border px-3 py-1 rounded text-gray-600 shadow-sm">
+                      <span class="mdi mdi-chevron-down"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="sequential-prog" class="hidden h-full flex flex-col p-2">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-sm font-bold text-gray-700">Sequence Builder</h2>
               <button
-                onclick="sendServoCommand('pan', 'increment')"
-                class="btn-servo">
-                Left <span class="mdi mdi-arrow-left"></span>
-              </button>
-              <button
-                onclick="sendServoCommand('pan', 'decrement')"
-                class="btn-servo">
-                Right <span class="mdi mdi-arrow-right"></span>
+                id="toggle-fullscreen"
+                onclick="toggleFullscreen()"
+                class="text-xs text-blue-600 font-semibold flex items-center hover:bg-blue-50 px-2 py-1 rounded">
+                <span
+                  id="fullscreen-icon"
+                  class="mdi mdi-fullscreen mr-1"></span>
+                Expand
               </button>
             </div>
-          </div>
-          <div class="text-center flex flex-col items-center">
-            <span class="mb-2 font-medium">Tilt (Head)</span>
-            <div class="flex space-x-2">
+
+            <div
+              class="flex-1 border border-gray-200 rounded-lg overflow-hidden bg-white shadow-inner mb-3">
+              <div id="blocklyDiv"></div>
+            </div>
+
+            <div
+              class="flex-none flex flex-col sm:flex-row gap-2 items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
               <button
-                onclick="sendServoCommand('tilt', 'decrement')"
-                class="btn-servo">
-                Up <span class="mdi mdi-arrow-up"></span>
+                onclick="runBlocklyInstructions()"
+                class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-colors flex items-center justify-center gap-2">
+                <span class="mdi mdi-play"></span> Run Sequence
+              </button>
+              <span
+                id="seq-status"
+                class="text-xs font-medium text-gray-500 ml-2"
+                >Ready to program</span
+              >
+            </div>
+            <textarea id="generated_instructions" class="hidden"></textarea>
+          </section>
+
+          <section
+            id="face-track"
+            class="hidden h-full flex flex-col items-center justify-center p-6 text-center">
+            <div class="bg-blue-50 rounded-full p-6 mb-4">
+              <span
+                class="mdi mdi-face-recognition text-6xl text-blue-500"></span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">
+              Face Tracking Mode
+            </h3>
+            <p class="text-gray-500 mb-8 max-w-md">
+              The robot will autonomously scan the environment. When a face is
+              detected, it will align its camera and move to maintain a set
+              distance.
+            </p>
+            <button
+              onclick="setMode('FACE_TRACK')"
+              class="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-500/30 transition-all flex items-center justify-center gap-2">
+              <span class="mdi mdi-eye"></span> Activate Tracking
+            </button>
+          </section>
+
+          <section id="line-follow" class="hidden h-full flex flex-col p-4">
+            <div class="text-center mb-4">
+              <h3 class="text-lg font-bold text-gray-800">
+                Line Follow Configuration
+              </h3>
+              <p class="text-sm text-gray-500">Select the track color below</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <button
+                onclick="setLineColor('black')"
+                class="h-16 rounded-xl border-2 border-transparent hover:border-gray-300 bg-gray-900 text-white font-medium shadow-sm transition-all">
+                Black
               </button>
               <button
-                onclick="sendServoCommand('tilt', 'increment')"
-                class="btn-servo">
-                Down <span class="mdi mdi-arrow-down"></span>
+                onclick="setLineColor('white')"
+                class="h-16 rounded-xl border-2 border-gray-200 hover:border-gray-300 bg-white text-gray-800 font-medium shadow-sm transition-all">
+                White
+              </button>
+              <button
+                onclick="setLineColor('red')"
+                class="h-16 rounded-xl border-2 border-transparent hover:border-red-200 bg-red-500 text-white font-medium shadow-sm shadow-red-200 transition-all">
+                Red
+              </button>
+              <button
+                onclick="setLineColor('blue')"
+                class="h-16 rounded-xl border-2 border-transparent hover:border-blue-200 bg-blue-600 text-white font-medium shadow-sm shadow-blue-200 transition-all">
+                Blue
+              </button>
+              <button
+                onclick="setLineColor('green')"
+                class="h-16 rounded-xl border-2 border-transparent hover:border-green-200 bg-green-600 text-white font-medium shadow-sm shadow-green-200 transition-all">
+                Green
+              </button>
+              <button
+                onclick="setLineColor('yellow')"
+                class="h-16 rounded-xl border-2 border-transparent hover:border-yellow-200 bg-yellow-400 text-yellow-900 font-medium shadow-sm shadow-yellow-200 transition-all">
+                Yellow
               </button>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section
-        id="sequential-prog"
-        class="control-panel panel-bg panel-shadow rounded-xl p-6 hidden">
-        <h2
-          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
-          2. Sequential Programming (Blockly)
-          <span class="mdi mdi-puzzle"></span>
-        </h2>
+            <div
+              id="color-status"
+              class="text-center text-sm font-medium h-6 mb-4"></div>
 
-        <div
-          id="blocklyDiv"
-          class="w-full border-2 border-blue-600 rounded-md mb-4 bg-white"
-          style="height: 300px"></div>
-
-        <div
-          class="flex flex-col sm:flex-row justify-between items-center mt-4">
-          <button
-            onclick="runBlocklyInstructions()"
-            class="btn-primary run-blockly-btn w-full sm:w-auto mb-3 sm:mb-0">
-            Run Block Sequence <span class="mdi mdi-rocket"></span>
-          </button>
-          <p id="seq-status" class="text-yellow-400 font-medium"></p>
-        </div>
-        <textarea
-          id="generated_instructions"
-          rows="2"
-          cols="50"
-          class="hidden"></textarea>
-      </section>
-
-      <section
-        id="face-track"
-        class="control-panel panel-bg panel-shadow rounded-xl p-6 hidden">
-        <h2
-          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
-          3. Autonomous Mode: Face Tracking
-          <span class="mdi mdi-face-recognition"></span>
-        </h2>
-        <p class="mb-6 text-slate-300">
-          In this mode, the robot will use its camera and vision system to
-          detect and track the nearest face, adjusting its pan/tilt and movement
-          to keep it centered.
-        </p>
-        <button
-          class="btn-action bg-blue-600 hover:bg-blue-700 w-full"
-          onclick="setMode('FACE_TRACK')">
-          Start Face Tracking <span class="mdi mdi-eye"></span>
-        </button>
-      </section>
-
-      <section
-        id="line-follow"
-        class="control-panel panel-bg panel-shadow rounded-xl p-6 hidden">
-        <h2
-          class="text-2xl font-semibold text-blue-400 mb-6 border-b border-blue-600 pb-2">
-          4. Autonomous Mode: Line Following
-          <span class="mdi mdi-ray-end-arrow"></span>
-        </h2>
-        <p class="mb-4 text-slate-300">
-          In this mode, the robot analyzes the camera feed to follow a colored
-          line, autonomously navigating a track.
-        </p>
-
-        <div class="mb-6 p-4 bg-slate-700 rounded-lg">
-          <label class="block text-sm font-medium mb-3 text-slate-200">
-            Select Line Color:
-          </label>
-          <div class="grid grid-cols-4 gap-2">
-            <button
-              onclick="setLineColor('black')"
-              class="color-btn bg-gray-900 text-white">
-              Black
-            </button>
-            <button
-              onclick="setLineColor('white')"
-              class="color-btn bg-gray-100 text-gray-900">
-              White
-            </button>
-            <button
-              onclick="setLineColor('red')"
-              class="color-btn bg-red-600 text-white">
-              Red
-            </button>
-            <button
-              onclick="setLineColor('blue')"
-              class="color-btn bg-blue-600 text-white">
-              Blue
-            </button>
-            <button
-              onclick="setLineColor('green')"
-              class="color-btn bg-green-600 text-white">
-              Green
-            </button>
-            <button
-              onclick="setLineColor('yellow')"
-              class="color-btn bg-yellow-400 text-gray-900">
-              Yellow
-            </button>
-            <button
-              onclick="setLineColor('orange')"
-              class="color-btn bg-orange-500 text-white">
-              Orange
-            </button>
-          </div>
-          <div id="color-status" class="mt-3 text-sm text-green-400"></div>
-        </div>
-
-        <button
-          class="btn-action bg-yellow-600 hover:bg-yellow-700 text-gray-900 w-full"
-          onclick="setMode('LINE_FOLLOW')">
-          Start Line Follow <span class="mdi mdi-ruler"></span>
-        </button>
-      </section>
-    </main>
-
-    <button
-      onclick="setMode('STOP')"
-      class="stop-all-btn bg-red-600 hover:bg-red-700 text-white mt-10 text-2xl font-bold py-4 px-8 rounded-xl shadow-2xl transition duration-200">
-      <span class="mdi mdi-stop-circle"></span> STOP ALL MOTION
-    </button>
+            <div class="mt-auto">
+              <button
+                onclick="setMode('LINE_FOLLOW')"
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-orange-500/30 transition-all flex items-center justify-center gap-2">
+                <span class="mdi mdi-road-variant"></span> Start Autonomous
+                Drive
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
 
     <script src="{{ url_for('static', filename='blockly/blockly_compressed.js') }}"></script>
     <script src="{{ url_for('static', filename='blockly/blocks_compressed.js') }}"></script>
     <script src="{{ url_for('static', filename='blockly/javascript_compressed.js') }}"></script>
     <script src="{{ url_for('static', filename='blockly/msg/js/en.js') }}"></script>
     <script>
-      // For Blockly v12+, we need to use forBlock to register generators
-      // Get reference to the JavaScript generator
+      // ---------------------------------------------------------
+      // JAVASCRIPT LOGIC (PRESERVED)
+      // ---------------------------------------------------------
       const javascriptGenerator = Blockly.JavaScript;
 
-      // Define custom robot blocks
       Blockly.Blocks["robot_forward"] = {
         init: function () {
           this.appendDummyInput().appendField("Move Forward for");
@@ -413,7 +436,7 @@
           this.appendDummyInput().appendField("seconds");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
-          this.setColour(120);
+          this.setColour(210); // Changed color for light theme contrast
           this.setTooltip("Move robot forward");
           this.setHelpUrl("");
         },
@@ -426,7 +449,7 @@
           this.appendDummyInput().appendField("seconds");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
-          this.setColour(120);
+          this.setColour(210);
           this.setTooltip("Move robot backward");
           this.setHelpUrl("");
         },
@@ -439,7 +462,7 @@
           this.appendDummyInput().appendField("seconds");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
-          this.setColour(60);
+          this.setColour(160);
           this.setTooltip("Turn robot left");
           this.setHelpUrl("");
         },
@@ -452,7 +475,7 @@
           this.appendDummyInput().appendField("seconds");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
-          this.setColour(60);
+          this.setColour(160);
           this.setTooltip("Turn robot right");
           this.setHelpUrl("");
         },
@@ -471,7 +494,6 @@
         },
       };
 
-      // Register code generators using forBlock (Blockly v12+ API)
       javascriptGenerator.forBlock["robot_forward"] = function (
         block,
         generator
@@ -533,68 +555,34 @@
 
       const toolboxXml = `
         <xml id="toolbox" style="display: none">
-          <category name="Robot Movement" colour="120">
+          <category name="Movement" colour="210">
             <block type="robot_forward">
-              <value name="DURATION">
-                <shadow type="math_number">
-                  <field name="NUM">2</field>
-                </shadow>
-              </value>
+              <value name="DURATION"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
             </block>
             <block type="robot_backward">
-              <value name="DURATION">
-                <shadow type="math_number">
-                  <field name="NUM">2</field>
-                </shadow>
-              </value>
+              <value name="DURATION"><shadow type="math_number"><field name="NUM">2</field></shadow></value>
             </block>
             <block type="robot_left">
-              <value name="DURATION">
-                <shadow type="math_number">
-                  <field name="NUM">1</field>
-                </shadow>
-              </value>
+              <value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
             </block>
             <block type="robot_right">
-              <value name="DURATION">
-                <shadow type="math_number">
-                  <field name="NUM">1</field>
-                </shadow>
-              </value>
+              <value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
             </block>
             <block type="robot_stop">
-              <value name="DURATION">
-                <shadow type="math_number">
-                  <field name="NUM">1</field>
-                </shadow>
-              </value>
+              <value name="DURATION"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
             </block>
           </category>
           <category name="Loops" colour="120">
             <block type="controls_repeat_ext">
-              <value name="TIMES">
-                <shadow type="math_number">
-                  <field name="NUM">3</field>
-                </shadow>
-              </value>
+              <value name="TIMES"><shadow type="math_number"><field name="NUM">3</field></shadow></value>
             </block>
           </category>
           <category name="Math" colour="230">
-            <block type="math_number">
-              <field name="NUM">1</field>
-            </block>
+            <block type="math_number"><field name="NUM">1</field></block>
             <block type="math_arithmetic">
               <field name="OP">ADD</field>
-              <value name="A">
-                <shadow type="math_number">
-                  <field name="NUM">1</field>
-                </shadow>
-              </value>
-              <value name="B">
-                <shadow type="math_number">
-                  <field name="NUM">1</field>
-                </shadow>
-              </value>
+              <value name="A"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+              <value name="B"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
             </block>
           </category>
         </xml>
@@ -616,9 +604,38 @@
         });
 
         if (sectionId === "sequential-prog") {
-          if (!workspace) {
-            initBlockly();
-          }
+          // Slight delay to ensure DOM is visible for Blockly injection sizing
+          setTimeout(() => {
+            if (!workspace) {
+              initBlockly();
+            } else {
+              Blockly.svgResize(workspace);
+            }
+          }, 10);
+        }
+      }
+
+      function toggleFullscreen() {
+        const section = document.getElementById("sequential-prog");
+        const icon = document.getElementById("fullscreen-icon");
+        const btn = document.getElementById("toggle-fullscreen");
+
+        if (section.classList.contains("fullscreen-blockly")) {
+          section.classList.remove("fullscreen-blockly");
+          icon.classList.remove("mdi-fullscreen-exit");
+          icon.classList.add("mdi-fullscreen");
+          btn.innerHTML =
+            '<span id="fullscreen-icon" class="mdi mdi-fullscreen mr-1"></span> Expand';
+        } else {
+          section.classList.add("fullscreen-blockly");
+          icon.classList.remove("mdi-fullscreen");
+          icon.classList.add("mdi-fullscreen-exit");
+          btn.innerHTML =
+            '<span id="fullscreen-icon" class="mdi mdi-fullscreen-exit mr-1"></span> Exit';
+        }
+
+        if (workspace) {
+          Blockly.svgResize(workspace);
         }
       }
 
@@ -676,16 +693,15 @@
 
       function initBlockly() {
         const blocklyDiv = document.getElementById("blocklyDiv");
-
         const toolbox = toolboxXml;
 
+        // Light Theme Configuration
         workspace = Blockly.inject(blocklyDiv, {
           toolbox: toolbox,
           scrollbars: true,
           trashcan: true,
           horizontalLayout: false,
-          renderer: "thrasos",
-          grid: { spacing: 20, length: 3, colour: "#64748b", snap: true },
+          grid: { spacing: 20, length: 3, colour: "#cbd5e1", snap: true },
           zoom: {
             controls: true,
             wheel: true,
@@ -693,13 +709,19 @@
             maxScale: 3,
             minScale: 0.3,
           },
+          move: { scrollbars: true, drag: true, wheel: true },
         });
 
         const xmlText =
-          '<xml><block type="robot_forward" x="70" y="50"><value name="DURATION"><shadow type="math_number"><field name="NUM">2</field></shadow></value></block></xml>';
-
+          '<xml><block type="robot_forward" x="50" y="50"><value name="DURATION"><shadow type="math_number"><field name="NUM">2</field></shadow></value></block></xml>';
         const xmlDom = Blockly.utils.xml.textToDom(xmlText);
         Blockly.Xml.domToWorkspace(xmlDom, workspace);
+
+        window.addEventListener("resize", function () {
+          if (workspace) {
+            Blockly.svgResize(workspace);
+          }
+        });
       }
 
       function runBlocklyInstructions() {
@@ -709,7 +731,6 @@
         }
 
         let code = javascriptGenerator.workspaceToCode(workspace);
-
         const instruction_list = code
           .split(";")
           .map((s) => s.trim())
@@ -718,15 +739,16 @@
 
         document.getElementById("generated_instructions").value =
           instruction_list;
-
         const statusEl = document.getElementById("seq-status");
 
         if (!instruction_list) {
-          statusEl.innerText = "Please add movement blocks to the workspace.";
+          statusEl.innerText = "Error: Workspace is empty.";
+          statusEl.className = "text-xs font-bold text-red-500 ml-2";
           return;
         }
 
-        statusEl.innerText = "Sending instructions...";
+        statusEl.innerText = "Sending...";
+        statusEl.className = "text-xs font-medium text-yellow-600 ml-2";
 
         fetch("/run_instructions", {
           method: "POST",
@@ -737,14 +759,16 @@
           .then((data) => {
             if (data.status === "running") {
               updateMode(data.mode);
-              statusEl.innerText = `Running sequence with ${data.count} steps...`;
+              statusEl.innerText = `Running ${data.count} steps...`;
+              statusEl.className = "text-xs font-medium text-green-600 ml-2";
             } else {
               statusEl.innerText = data.message;
             }
           })
           .catch((error) => {
             console.error("Error:", error);
-            statusEl.innerText = "Failed to send instructions.";
+            statusEl.innerText = "Failed to send.";
+            statusEl.className = "text-xs font-bold text-red-500 ml-2";
           });
       }
 
@@ -776,26 +800,24 @@
             const statusEl = document.getElementById("color-status");
             if (data.status === "color_set") {
               statusEl.innerText = `✓ Line color set to: ${color.toUpperCase()}`;
-              statusEl.className = "mt-3 text-sm text-green-400";
+              statusEl.className = "text-sm font-bold text-green-600 mb-4 h-6";
             } else {
               statusEl.innerText = `✗ Failed to set color: ${data.message}`;
-              statusEl.className = "mt-3 text-sm text-red-400";
+              statusEl.className = "text-sm font-bold text-red-500 mb-4 h-6";
             }
           })
           .catch((error) => {
             console.error("Error:", error);
             const statusEl = document.getElementById("color-status");
             statusEl.innerText = "✗ Connection error";
-            statusEl.className = "mt-3 text-sm text-red-400";
+            statusEl.className = "text-sm font-bold text-red-500 mb-4 h-6";
           });
       }
 
       window.onload = function () {
         if (typeof Blockly !== "undefined" && Blockly.inject) {
         } else {
-          console.error(
-            "Blockly library not found. Ensure static/blockly/ files are loaded correctly."
-          );
+          console.error("Blockly library not found.");
         }
         updateMode("STOP");
         showSection("manual-drive");
