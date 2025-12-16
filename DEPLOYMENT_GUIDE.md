@@ -102,7 +102,15 @@ In the settings window, fill in these details:
 4. Find device named "meepobot" (or the hostname you chose)
 5. Write down the IP address (looks like: 192.168.1.100)
 
-**Option B: Use IP Scanner App**
+**Option B: Use Advanced IP Scanner (Windows)**
+
+1. Download "Advanced IP Scanner": https://www.advanced-ip-scanner.com/
+2. Install and run the program.
+3. Click the green "Scan" button.
+4. Look for a device with the manufacturer "Raspberry Pi Foundation" or the name "meepobot".
+5. Write down the IP address.
+
+**Option C: Use IP Scanner App (Phone)**
 
 1. Download "Fing" app on your phone (free!)
 2. Open the app
@@ -110,7 +118,7 @@ In the settings window, fill in these details:
 4. Look for device named "meepobot" or "Raspberry Pi"
 5. Write down the IP address
 
-**Option C: Use Command (Advanced)**
+**Option D: Use Command (Advanced)**
 
 On Windows:
 
@@ -313,6 +321,17 @@ pip install --upgrade --no-cache-dir picamera2 simplejpeg
 
 ### Step 17: Test the Installation
 
+### Step 17.5: Test the Camera
+
+Let's check if the camera is detected by the system. This command should have been installed with `libcamera-apps`.
+
+```bash
+rpicam-hello --list-cameras
+```
+
+You should see output listing the available cameras, like `0 : imx708_wide [4608x2592] (/base/soc/i2c0mux/i2c@1/imx708@1a)`.
+If it says "no cameras available", power down the Pi and double-check that your camera's ribbon cable is securely connected at both ends.
+
 Let's check if I2C devices are detected:
 
 ```bash
@@ -507,14 +526,26 @@ The first number shown is your IP address!
 
 **Solution:**
 
+````bashif the system detects the camera:
+
 ```bash
-sudo nmcli radio wifi on
-sudo nmcli device wifi rescan
-sudo nmcli device wifi list
-sudo nmcli device wifi connect "YourWiFiName" password "YourPassword"
+rpicam-hello --list-cameras
+````
+
+- If it shows "no cameras available", power off the Pi and carefully re-seat the camera ribbon cable on both the Pi and the camera module. Ensure it's inserted straight and locked.
+- If it lists a camera, the hardware is likely fine.
+
+**Solution 2:** Check your `config.txt` file:
+
+```bash
+sudo nano /boot/firmware/config.txt
 ```
 
-Replace `YourWiFiName` and `YourPassword` with your actual WiFi details!
+Make sure these two lines are present and not commented out (no `#` at the beginning):
+`camera_auto_detect=1`
+`dtoverlay=vc4-kms-v3d`
+
+\*\*Solution 3
 
 ### Problem: Camera Not Working
 
