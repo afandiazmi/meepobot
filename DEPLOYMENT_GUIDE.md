@@ -192,14 +192,11 @@ sudo raspi-config
 Press Enter, then:
 
 1. Use arrow keys (↑ ↓) to select **"3 Interface Options"** → Press Enter
-2. Select **"I1 Legacy Camera"** → Press Enter
+2. Use arrow keys to select **"I5 I2C"** → Press Enter
 3. Select **"Yes"** → Press Enter
 4. Select **"Ok"** → Press Enter
-5. Use arrow keys to select **"I5 I2C"** → Press Enter
-6. Select **"Yes"** → Press Enter
-7. Select **"Ok"** → Press Enter
-8. Press the **Right Arrow** key twice to select **"Finish"**
-9. When asked to reboot → Select **"Yes"**
+5. Press the **Right Arrow** key twice to select **"Finish"**
+6. When asked to reboot → Select **"Yes"**
 
 Wait 30 seconds for Raspberry Pi to restart, then reconnect with SSH (Step 8 again).
 
@@ -255,27 +252,14 @@ sudo apt upgrade -y
 Copy and paste this BIG command (all one line!):
 
 ```bash
-sudo apt install python3-pip python3-venv git i2c-tools libcap-dev libcamera-dev python3-libcamera python3-smbus -y
+sudo apt install python3-pip python3-venv git i2c-tools libcamera-apps libcap-dev libcamera-dev python3-libcamera python3-smbus -y
 ```
 
 ⏳ Wait... (about 2-3 minutes)
 
 ### Step 13: Enable pigpiod Service (for GPIO control)
 
-Type these commands:
-
-```bash
-sudo systemctl enable pigpiod
-sudo systemctl start pigpiod
-```
-
-Check if it's working:
-
-```bash
-sudo systemctl status pigpiod
-```
-
-You should see green text "active (running)". Press `q` to quit.
+**Skip this step for Raspberry Pi 5!** The new system uses `lgpio` which is already installed.
 
 ---
 
@@ -389,7 +373,7 @@ Paste this text (copy EXACTLY):
 ```ini
 [Unit]
 Description=MEEPOBOT Web Control Service
-After=network.target pigpiod.service
+After=network.target
 
 [Service]
 Type=simple
