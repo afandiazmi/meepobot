@@ -222,7 +222,7 @@ sudo nano /boot/firmware/config.txt
 ```
 # Camera Configuration for Raspberry Pi 5
 dtoverlay=vc4-kms-v3d
-camera_auto_detect=1
+camera_auto_detect=2
 ```
 
 3. Press `Ctrl` + `O` to save (press Enter to confirm)
@@ -346,13 +346,13 @@ You should see a grid with numbers (these are your connected devices).
 
 ### Step 18: Test Manual Run
 
-First, let's test if everything works:
+First, let's test if everything works. This command assumes you are in the `meepobot` directory.
 
 ```bash
-sudo env "PATH=$PATH" /home/robot/meepobot/venv/bin/python3 app.py
+cd $HOME/meepobot
+source venv/bin/activate
+sudo env "PATH=$PATH" python3 app.py
 ```
-
-**Note:** Replace `robot` with your username if different!
 
 You should see:
 
@@ -387,7 +387,7 @@ Type this command:
 sudo nano /etc/systemd/system/meepobot.service
 ```
 
-Paste this text (copy EXACTLY):
+Paste this text (copy EXACTLY). This uses `~` which is a shortcut for your home directory.
 
 ```ini
 [Unit]
@@ -396,7 +396,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
+User=robot
 WorkingDirectory=/home/robot/meepobot
 Environment="PATH=/home/robot/meepobot/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ExecStart=/home/robot/meepobot/venv/bin/python3 /home/robot/meepobot/app.py
@@ -407,7 +407,7 @@ RestartSec=10
 WantedBy=multi-user.target
 ```
 
-**⚠️ IMPORTANT:** If your username is NOT "robot", change all `/home/robot/` to `/home/YOURUSERNAME/`
+**⚠️ IMPORTANT:** If your username is NOT "robot", change `User=robot` to `User=YOUR_USERNAME` and all `/home/robot/` paths to `/home/YOUR_USERNAME/`. Systemd doesn't automatically know the user, so this step is crucial!
 
 Save and exit:
 
@@ -544,24 +544,6 @@ sudo nano /boot/firmware/config.txt
 Make sure these two lines are present and not commented out (no `#` at the beginning):
 `camera_auto_detect=1`
 `dtoverlay=vc4-kms-v3d`
-
-\*\*Solution 3
-
-### Problem: Camera Not Working
-
-**Solution 1:** Check camera is enabled:
-
-```bash
-sudo raspi-config
-```
-
-Go to "Interface Options" → "Legacy Camera" → Enable
-
-**Solution 2:** Reboot:
-
-```bash
-sudo reboot
-```
 
 ### Problem: I2C Devices Not Found
 
