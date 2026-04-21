@@ -217,12 +217,12 @@ sudo nano /boot/firmware/config.txt
 ```
 
 1. Use arrow keys to scroll to the bottom of the file
-2. Add these lines at the very end:
+2. Check if this line consist in the file, if not then you can add it manually:
 
 ```
 # Camera Configuration for Raspberry Pi 5
 dtoverlay=vc4-kms-v3d
-camera_auto_detect=2
+camera_auto_detect=1
 ```
 
 3. Press `Ctrl` + `O` to save (press Enter to confirm)
