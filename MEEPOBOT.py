@@ -1,10 +1,10 @@
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-@－－－－湖南创乐博智能科技有限公司－－－－
-@  文件名：MEEPOBOT.py 
-@  版本：V2.0 
-@  author: zhulin
-@  说明：机器人控制库
- 驱动机器人的基本运动库函数
+@ Filename: MEEPOBOT.py
+@ Version: V2.0
+@ Author: Afandi Azmi
+@ Description: Robot control library
+
+Basic motion library functions for driving robots
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
@@ -99,7 +99,7 @@ class PCA9685:
 
 
 
-# 控制机器人库
+# Control Robot Library
 class MEEPOBOT():
     def __init__(self):
         self.PWMA = 0
@@ -120,8 +120,8 @@ class MEEPOBOT():
         
         self.pwm = PCA9685(0x40, debug=False)
         self.pwm.setPWMFreq(50)
-        self.motorD1 = LED(self.DIN1)  # 方向口1，设置为输出模式为LED类型
-        self.motorD2 = LED(self.DIN2)  # 方向口2，设置为输出模式为LED类型
+        self.motorD1 = LED(self.DIN1)  # Directional port 1, set the output mode to LED type
+        self.motorD2 = LED(self.DIN2)  # Directional port 2, set the output mode to LED type
 
     def MotorRun(self, motor, index, speed):
         if speed > 100:
@@ -153,13 +153,13 @@ class MEEPOBOT():
         elif(motor == 3):
             self.pwm.setDutycycle(self.PWMD,speed)
             if (index == Dir[0]):
-                self.motorD1.off()    # DIn1设置为低电平
-                self.motorD2.on()     # DIn2设置为高电平
+                self.motorD1.off()    # Set DIn1 to low level
+                self.motorD2.on()    # Set DIn2 to high level
                 #GPIO.output(self.DIN1,0)
                 #GPIO.output(self.DIN2,1)
             else:
-                self.motorD1.on()    # DIn1设置为高电平
-                self.motorD2.off()   # DIn2设置为低电平
+                self.motorD1.on()    # Set DIn1 to high level
+                self.motorD2.off()  # Set DIn2 to low level
                 #GPIO.output(self.DIN1,1)
                 #GPIO.output(self.DIN2,0)
 
@@ -172,14 +172,14 @@ class MEEPOBOT():
             self.pwm.setDutycycle(self.PWMC, 0)
         elif(motor == 3):
             self.pwm.setDutycycle(self.PWMD, 0)
-    # 前进
+    # forward
     def t_up(self,speed,t_time):
         self.MotorRun(0,'forward',speed)
         self.MotorRun(1,'forward',speed)
         self.MotorRun(2,'forward',speed)
         self.MotorRun(3,'forward',speed)
         time.sleep(t_time)
-    #后退
+    # Back
     def t_down(self,speed,t_time):
         self.MotorRun(0,'backward',speed)
         self.MotorRun(1,'backward',speed)
@@ -187,7 +187,7 @@ class MEEPOBOT():
         self.MotorRun(3,'backward',speed)
         time.sleep(t_time)
 
-    # 左移
+    # shift left
     def moveLeft(self,speed,t_time):
         self.MotorRun(0,'backward',speed)
         self.MotorRun(1,'forward',speed)
@@ -195,7 +195,7 @@ class MEEPOBOT():
         self.MotorRun(3,'backward',speed)
         time.sleep(t_time)
 
-    #右移
+    #shift right
     def moveRight(self,speed,t_time):
         self.MotorRun(0,'forward',speed)
         self.MotorRun(1,'backward',speed)
@@ -203,7 +203,7 @@ class MEEPOBOT():
         self.MotorRun(3,'forward',speed)
         time.sleep(t_time)
 
-    # 左转
+    # turn left
     def turnLeft(self,speed,t_time):
         self.MotorRun(0,'backward',speed)
         self.MotorRun(1,'forward',speed)
@@ -211,7 +211,7 @@ class MEEPOBOT():
         self.MotorRun(3,'forward',speed)
         time.sleep(t_time)
     
-    # 右转
+    # turn right
     def turnRight(self,speed,t_time):
         self.MotorRun(0,'forward',speed)
         self.MotorRun(1,'backward',speed)
@@ -219,7 +219,7 @@ class MEEPOBOT():
         self.MotorRun(3,'backward',speed)
         time.sleep(t_time)
     
-    # 前左斜
+    # forward left
     def forward_Left(self,speed,t_time):
         self.MotorStop(0)
         self.MotorRun(1,'forward',speed)
@@ -227,7 +227,7 @@ class MEEPOBOT():
         self.MotorStop(0)
         time.sleep(t_time)
 
-    # 前右斜
+    # forward right
     def forward_Right(self,speed,t_time):
         self.MotorRun(0,'forward',speed)
         self.MotorStop(1)
@@ -235,7 +235,7 @@ class MEEPOBOT():
         self.MotorRun(3,'forward',speed)
         time.sleep(t_time)
 
-    # 后左斜
+    # backward left
     def backward_Left(self,speed,t_time):
         self.MotorRun(0,'backward',speed)
         self.MotorStop(1)
@@ -243,7 +243,7 @@ class MEEPOBOT():
         self.MotorRun(3,'backward',speed)
         time.sleep(t_time)
     
-    # 后右斜
+    # backward right
     def backward_Right(self,speed,t_time):
         self.MotorStop(0)
         self.MotorRun(1,'backward',speed)
@@ -252,7 +252,7 @@ class MEEPOBOT():
         time.sleep(t_time)
 
 
-    # 停止
+    # stop
     def t_stop(self,t_time):
         self.MotorStop(0)
         self.MotorStop(1)
@@ -260,7 +260,7 @@ class MEEPOBOT():
         self.MotorStop(3)
         time.sleep(t_time)
 
-        # 辅助功能，使设置舵机脉冲宽度更简单。
+        # set servo
     def set_servo_pulse(self,channel,pulse):
         pulse_length = 1000000    # 1,000,000 us per second
         pulse_length //= 60       # 60 Hz
@@ -271,7 +271,7 @@ class MEEPOBOT():
         pulse //= pulse_length
         self.pwm.setPWM(channel, 0, pulse)
 
-    # 设置舵机角度函数  
+    # set servo angle
     def set_servo_angle(self,channel,angle):
         angle=4096*((angle*11)+500)/20000
         self.pwm.setPWM(channel,0,int(angle))
